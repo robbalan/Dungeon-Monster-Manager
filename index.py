@@ -44,6 +44,7 @@ def playerturn():
     global gold
     if daystorent == -1:
         daystorent = 6
+    print("-----------------------")
     print(f"It is day {day}")
     print(f"You have {gold} gold")
     print(f"You have {len(monsters["goblins"])} goblins")
