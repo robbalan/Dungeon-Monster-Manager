@@ -1,7 +1,7 @@
 import random
 
 
-
+#This should all probably be in a class?
 managerlevel = 0 
 day = 1
 gold = 1000
