@@ -12,13 +12,15 @@ monsters = {
     "orcs":["Bruk", "Druk"],
     "ogres": ["Meat"],
     "dragons": ["Sylvander"]
-    }
+    } #Currently just keeping a few monsters in the lists for testing, game will start with them being empty
 
+#global variables for total gold for each monster type- I need to figure out how to not need these
 gobtotal = 0
 orctotal = 0
 ogretotal = 0
 dragtotal = 0
 
+#classes are not implemented yet, WIP
 class Unit:
     def __init__(self, type, unithealth):
         self.type = type
@@ -31,10 +33,10 @@ def gamestart(begingame = False):
     if startgame == "p":
         pass
     elif startgame == "o":
-        print("No options available")
+        print("No options available") #options are a long time away; first iteration will probably be difficulty e.g. starting gold
         gamestart()
     else:
-        gamestart()
+        gamestart() #loops back to the menu
 
 #Main player turn, all players actions and info should flow through here
 def playerturn():
@@ -76,6 +78,7 @@ def fire_monster():
     playerturn()
 
 #ends the day, changing the day value, calculates/prints gold gain and potentially collecting rent
+#Global vars used to update and then reset the values. I don't think the totals are actually needed as global since they should just be added to total, but I'd like to improve this anyway
 def end_day():
     global day
     global daystorent
@@ -89,6 +92,7 @@ def end_day():
         if len(monsters[i]) == 0: #if threre are no monsters of a certain type, does not tell you their gold generation
             pass
         else: #if you have monsters, tells you their daily gold generation
+              #Is there a better way to loop this in case I have more monsters?
             if i == "goblins":
                 print(f"Your {i} generated {gobtotal} gold today!")
             elif i == "orcs":
@@ -109,6 +113,7 @@ def end_day():
     print()    
     playerturn() 
 
+#Generates random gold per monster- is there a better way?
 def goldgain():
     for i in monsters["goblins"]:
         global gobtotal
@@ -128,7 +133,7 @@ def goldgain():
         dragtotal = dragtotal + draggain
 
 
-#starts the game, eventual plan to run game state without functions starting other functions
+#starts the game, eventual plan to run game state without functions starting other functions. I think gamestart has to be outside of this to work properly (once functions don't connect directly)?
 gamestart()
 if __name__ == "__main__":
     playerturn()
