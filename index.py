@@ -5,13 +5,13 @@ import random
 managerlevel = 0 
 day = 1
 gold = 1000
-daystorent = 6
-rentprice = 100
+days_to_rent = 6
+rent_price = 100
 monsters = {
-    "goblins":["Tony", "Chad", "Mikey"], 
-    "orcs":["Bruk", "Druk"],
-    "ogres": ["Meat"],
-    "dragons": ["Sylvander"]
+    "goblins":[], 
+    "orcs":[],
+    "ogres": [],
+    "dragons": []
     } #Currently just keeping a few monsters in the lists for testing, game will start with them being empty
 
 #global variables for total gold for each monster type- I need to figure out how to not need these
@@ -20,19 +20,60 @@ orctotal = 0
 ogretotal = 0
 dragtotal = 0
 
-#classes are not implemented yet, WIP
+#Unit class sets params for fired/dead- future functions to delete objects when either is set to true
 class Unit:
-    def __init__(self, type, unithealth):
-        self.type = type
-        self.unithealth = unithealth
+    test_var = 3
+    def __init__(self, fired=False, dead=False):
+
+        self.is_fired = fired
+        self.is_dead = dead
+
+        if self.is_fired:
+            pass
+        if self.is_dead:
+            pass
+
+# Classes for all monster types
+class Goblin(Unit):
+    name = "Jasongob"
+    type = "Goblin"
+    max_health = 5
+    current_health = max_health
+    gold_low = 0
+    gold_high = 2
+
+class Orc(Unit):
+    name = "Jasorc"
+    type = "Orc"
+    max_health = 15
+    current_health = max_health
+    gold_low = 1
+    gold_high = 4
+
+class Ogre(Unit):
+    name = "Jasogre"
+    type = "Ogre"
+    max_health = 30
+    current_health = max_health
+    gold_low = -10
+    gold_high = 15
+
+class Dragon(Unit):
+    name = "Jason eyes white dragon"
+    type = "Dragon"
+    max_health = 75
+    current_health = max_health
+    gold_low = 20
+    gold_high = 50
+      
 
 #Launches the game
-def gamestart(begingame = False):
+def gamestart():
     print("Hello! Welcome to Dungeon Monster Manager! Ready to manage some monsters?")
-    startgame = input("Do you want to (p)lay or go to (o)ptions?: ")
-    if startgame == "p":
+    start_game = input("Do you want to (p)lay or go to (o)ptions?: ")
+    if start_game == "p":
         pass
-    elif startgame == "o":
+    elif start_game == "o":
         print("No options available") #options are a long time away; first iteration will probably be difficulty e.g. starting gold
         gamestart()
     else:
@@ -40,10 +81,10 @@ def gamestart(begingame = False):
 
 #Main player turn, all players actions and info should flow through here
 def playerturn():
-    global daystorent
+    global days_to_rent
     global gold
-    if daystorent == -1:
-        daystorent = 6
+    if days_to_rent == -1:
+        days_to_rent = 6
     print("-----------------------")
     print(f"It is day {day}")
     print(f"You have {gold} gold")
@@ -51,10 +92,10 @@ def playerturn():
     print(f"You have {len(monsters["orcs"])} orcs")
     print(f"You have {len(monsters["ogres"])} ogres")
     print(f"You have {len(monsters["dragons"])} dragons")
-    if daystorent != 0:
-        print(f"You have {daystorent} days until rent is due!")
+    if days_to_rent != 0:
+        print(f"You have {days_to_rent} days until rent is due!")
     else:
-        print(f"Rent is due today! {rentprice} gold will be collected at the end of the day!")
+        print(f"Rent is due today! {rent_price} gold will be collected at the end of the day!")
     turnaction()
 
 #Gives the player their actions and takes in the input of their selected action and runs the correct function
@@ -66,13 +107,45 @@ def turnaction():
         fire_monster()
     elif choice == "e":
         end_day()
+    elif choice == 'test':
+        for goblin in monsters["goblins"]:
+            print(goblin.name)
     else:
         print("That's not a valid input")
         turnaction()
 
 #allows the player to hire a monster
 def hire_monster():
-    playerturn()
+    global gold
+    print("-----------------------")
+    print("Time to add more workers!")
+    print(f"You have {gold} gold")
+    print("Goblins cost 10 gold")
+    print("Orcs cost 25 gold")
+    print("Ogres cost 35 gold")
+    print("Dragons cost 750 gold")
+    choice = input("Would you like to hire a (g)oblin, (o)rc, og(r)e or (d)ragon? Type (b) to go back: ").strip().lower()
+    if choice == "g":
+        gold -= 10
+        monsters["goblins"].append(Goblin())
+        hire_monster()
+    elif choice == "o":
+        gold -= 25
+        monsters["orcs"].append(Orc())
+        hire_monster()
+    elif choice == "r":
+        gold -= 35
+        monsters["ogres"].append(Ogre())
+        hire_monster()
+    elif choice == "d":
+        gold -= 750
+        monsters["dragons"].append(Dragon())
+        hire_monster()
+    elif choice == "b":
+        playerturn()
+    else:
+        print("That's not a valid choice!")
+        hire_monster()
 
 #allows the player to fire a monster
 def fire_monster():
@@ -82,7 +155,8 @@ def fire_monster():
 #Global vars used to update and then reset the values. I don't think the totals are actually needed as global since they should just be added to total, but I'd like to improve this anyway
 def end_day():
     global day
-    global daystorent
+    global gold
+    global days_to_rent
     global gobtotal
     global orctotal
     global ogretotal
@@ -102,15 +176,18 @@ def end_day():
                 print(f"Your {i} generated {ogretotal} gold today!")
             elif i == "dragons":
                 print(f"Your {i} generated {dragtotal} gold today!")
+    gold = gold + gobtotal + orctotal + ogretotal + dragtotal
     gobtotal = 0
     orctotal = 0
     ogretotal = 0
     dragtotal = 0
     day += 1
-    if daystorent == 0:
-        global gold
-        gold = gold - rentprice
-    daystorent -= 1
+    if days_to_rent == 0:
+        gold = gold - rent_price
+        if gold < 0:
+            print("You lose you fucking loser")
+            gamestart()
+    days_to_rent -= 1
     print()    
     playerturn() 
 
@@ -119,22 +196,26 @@ def goldgain():
     for i in monsters["goblins"]:
         global gobtotal
         gobgain = random.randint(0, 2)
-        gobtotal = gobtotal + gobgain
+        gobtotal += gobgain
     for i in monsters["orcs"]:
         global orctotal
         orcgain = random.randint(1, 4)
-        orctotal = orctotal + orcgain
+        orctotal += orcgain
     for i in monsters["ogres"]:
         global ogretotal
         ogregain = random.randint(-10, 15)
-        ogretotal = ogretotal + ogregain
+        ogretotal += ogregain
     for i in monsters["dragons"]:
         global dragtotal
         draggain = random.randint(20, 50)
-        dragtotal = dragtotal + draggain
+        dragtotal += draggain
 
 
-#starts the game, eventual plan to run game state without functions starting other functions. I think gamestart has to be outside of this to work properly (once functions don't connect directly)?
-gamestart()
+#starts the game, eventual plan to run game state without functions starting other functions.
 if __name__ == "__main__":
-    playerturn()
+    try:
+        gamestart()
+        playerturn()
+    except Exception as e:
+        print(e)
+        print("This didn't work but at least I didn't die")
