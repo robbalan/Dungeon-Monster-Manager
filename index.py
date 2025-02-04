@@ -104,6 +104,7 @@ def turnaction():
     elif choice == 'test':
         getgold()
         turnaction()
+
     else:
         print("That's not a valid input")
         turnaction()
@@ -162,7 +163,7 @@ def end_day():
     days_to_rent -= 1
     print()    
     playerturn() 
-
+    
 def getgold():
     allearned = 0
     for i in monsters:
@@ -176,7 +177,6 @@ def getgold():
             print(f"Your {i} earned {typeearned} gold!")
             allearned +=typeearned
     return allearned
-
 
 #starts the game, eventual plan to run game state without functions starting other functions.
 if __name__ == "__main__":
