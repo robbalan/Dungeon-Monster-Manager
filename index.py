@@ -14,15 +14,9 @@ monsters = {
     "dragons": []
     } #Currently just keeping a few monsters in the lists for testing, game will start with them being empty
 
-#global variables for total gold for each monster type- I need to figure out how to not need these
-gobtotal = 0
-orctotal = 0
-ogretotal = 0
-dragtotal = 0
 
 #Unit class sets params for fired/dead- future functions to delete objects when either is set to true
 class Unit:
-    test_var = 3
     def __init__(self, fired=False, dead=False):
 
         self.is_fired = fired
@@ -108,8 +102,9 @@ def turnaction():
     elif choice == "e":
         end_day()
     elif choice == 'test':
-        for goblin in monsters["goblins"]:
-            print(goblin.name)
+        getgold()
+        turnaction()
+
     else:
         print("That's not a valid input")
         turnaction()
@@ -157,30 +152,8 @@ def end_day():
     global day
     global gold
     global days_to_rent
-    global gobtotal
-    global orctotal
-    global ogretotal
-    global dragtotal
     print(f"That is the end of day {day}")
-    goldgain()
-    for i in monsters:
-        if len(monsters[i]) == 0: #if threre are no monsters of a certain type, does not tell you their gold generation
-            pass
-        else: #if you have monsters, tells you their daily gold generation
-              #Is there a better way to loop this in case I have more monsters?
-            if i == "goblins":
-                print(f"Your {i} generated {gobtotal} gold today!")
-            elif i == "orcs":
-                print(f"Your {i} generated {orctotal} gold today!")
-            elif i == "ogres":
-                print(f"Your {i} generated {ogretotal} gold today!")
-            elif i == "dragons":
-                print(f"Your {i} generated {dragtotal} gold today!")
-    gold = gold + gobtotal + orctotal + ogretotal + dragtotal
-    gobtotal = 0
-    orctotal = 0
-    ogretotal = 0
-    dragtotal = 0
+    gold += getgold()
     day += 1
     if days_to_rent == 0:
         gold = gold - rent_price
@@ -190,26 +163,20 @@ def end_day():
     days_to_rent -= 1
     print()    
     playerturn() 
-
-#Generates random gold per monster- is there a better way?
-def goldgain():
-    for i in monsters["goblins"]:
-        global gobtotal
-        gobgain = random.randint(0, 2)
-        gobtotal += gobgain
-    for i in monsters["orcs"]:
-        global orctotal
-        orcgain = random.randint(1, 4)
-        orctotal += orcgain
-    for i in monsters["ogres"]:
-        global ogretotal
-        ogregain = random.randint(-10, 15)
-        ogretotal += ogregain
-    for i in monsters["dragons"]:
-        global dragtotal
-        draggain = random.randint(20, 50)
-        dragtotal += draggain
-
+    
+def getgold():
+    allearned = 0
+    for i in monsters:
+        if len(monsters[i]) == 0: #if threre are no monsters of a certain type, does not tell you their gold generation
+            pass
+        else:
+            typeearned = 0
+            for j in monsters[i]:
+                earned = random.randint(j.gold_low, j.gold_high)
+                typeearned += earned
+            print(f"Your {i} earned {typeearned} gold!")
+            allearned +=typeearned
+    return allearned
 
 #starts the game, eventual plan to run game state without functions starting other functions.
 if __name__ == "__main__":
