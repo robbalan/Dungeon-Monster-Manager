@@ -1,8 +1,8 @@
 import random
-
+import names as name_gen
 
 #This should all probably be in a class?
-managerlevel = 0 
+manager_level = 0 
 day = 1
 gold = 1000
 days_to_rent = 6
@@ -12,11 +12,12 @@ monsters = {
     "orcs":[],
     "ogres": [],
     "dragons": []
-    } #Currently just keeping a few monsters in the lists for testing, game will start with them being empty
+    }
 
 
-#Unit class sets params for fired/dead- future functions to delete objects when either is set to true
+
 class Unit:
+    """Unit class sets params for fired/dead- future functions to delete objects when either is set to true."""
     def __init__(self, fired=False, dead=False):
 
         self.is_fired = fired
@@ -29,52 +30,60 @@ class Unit:
 
 # Classes for all monster types
 class Goblin(Unit):
-    name = "Jasongob"
+    """Creates a goblin."""
     type = "Goblin"
     max_health = 5
     current_health = max_health
     gold_low = 0
     gold_high = 2
+    def __init__(self):
+        self.name = name_gen.goblin_names()
 
 class Orc(Unit):
-    name = "Jasorc"
+    """Creates an orc."""
     type = "Orc"
     max_health = 15
     current_health = max_health
     gold_low = 1
     gold_high = 4
+    def __init__(self):
+        self.name = name_gen.orc_names()
 
 class Ogre(Unit):
-    name = "Jasogre"
+    """Creates an ogre."""
     type = "Ogre"
     max_health = 30
     current_health = max_health
     gold_low = -10
     gold_high = 15
+    def __init__(self):
+        self.name = name_gen.ogre_names()
 
 class Dragon(Unit):
-    name = "Jason eyes white dragon"
+    """Creates a dragon."""
     type = "Dragon"
     max_health = 75
     current_health = max_health
     gold_low = 20
     gold_high = 50
+    def __init__(self):
+        self.name = name_gen.dragon_names()
       
 
-#Launches the game
-def gamestart():
+def game_start():
+    """Launches the game."""
     print("Hello! Welcome to Dungeon Monster Manager! Ready to manage some monsters?")
     start_game = input("Do you want to (p)lay or go to (o)ptions?: ")
     if start_game == "p":
         pass
     elif start_game == "o":
         print("No options available") #options are a long time away; first iteration will probably be difficulty e.g. starting gold
-        gamestart()
+        game_start()
     else:
-        gamestart() #loops back to the menu
+        game_start() #loops back to the menu
 
-#Main player turn, all players actions and info should flow through here
-def playerturn():
+def player_turn():
+    """Provides insights and then runs turn_action function"""
     global days_to_rent
     global gold
     if days_to_rent == -1:
@@ -90,10 +99,11 @@ def playerturn():
         print(f"You have {days_to_rent} days until rent is due!")
     else:
         print(f"Rent is due today! {rent_price} gold will be collected at the end of the day!")
-    turnaction()
+    turn_action()
 
-#Gives the player their actions and takes in the input of their selected action and runs the correct function
-def turnaction():
+
+def turn_action():
+    """Provides player choices and takes their input to go to the correct function."""
     choice = input("Would you like to (h)ire a monster, (f)ire a monster, or (e)nd the day?: ").strip().lower()
     if choice == "h":
         hire_monster()
@@ -102,15 +112,16 @@ def turnaction():
     elif choice == "e":
         end_day()
     elif choice == 'test':
-        getgold()
-        turnaction()
+        for i in monsters["goblins"]:
+            print(i.name)
 
     else:
         print("That's not a valid input")
-        turnaction()
+        turn_action()
 
-#allows the player to hire a monster
+
 def hire_monster():
+    """Allows the player to hire monsters."""
     global gold
     print("-----------------------")
     print("Time to add more workers!")
@@ -137,52 +148,63 @@ def hire_monster():
         monsters["dragons"].append(Dragon())
         hire_monster()
     elif choice == "b":
-        playerturn()
+        player_turn()
     else:
         print("That's not a valid choice!")
         hire_monster()
 
-#allows the player to fire a monster
 def fire_monster():
-    playerturn()
+    """Will allow the player to fire a monster, currently not working."""
+    player_turn()
 
-#ends the day, changing the day value, calculates/prints gold gain and potentially collecting rent
-#Global vars used to update and then reset the values. I don't think the totals are actually needed as global since they should just be added to total, but I'd like to improve this anyway
+
 def end_day():
+    """Ends the day, changing the day value, calculates/prints gold gain and potentially collecting/increasing rent."""
     global day
     global gold
     global days_to_rent
+    global rent_price
     print(f"That is the end of day {day}")
-    gold += getgold()
+    gold += get_gold()
     day += 1
     if days_to_rent == 0:
         gold = gold - rent_price
+        rent_price += 50
         if gold < 0:
             print("You lose you fucking loser")
-            gamestart()
+            game_start()
     days_to_rent -= 1
+    if random.randint(0, 9) == 9:
+        give_bonus = input(monsters["goblins"][random.randint(0, len(monsters["goblins"])-1)].name + " wants some gold. Do you want to pay them 50 gold? y/n: ")
+        if give_bonus == "y":
+            gold -= 50
+        elif give_bonus == "n":
+            print("They are sad")
+        else:
+            print("Ignoring them? They'll remember this")
     print()    
-    playerturn() 
+    player_turn() 
     
-def getgold():
-    allearned = 0
+def get_gold():
+    """Calculates gold for every monster and monster type, based one each individual monster's gold stats"""
+    all_earned = 0
     for i in monsters:
         if len(monsters[i]) == 0: #if threre are no monsters of a certain type, does not tell you their gold generation
             pass
         else:
-            typeearned = 0
+            type_earned = 0
             for j in monsters[i]:
                 earned = random.randint(j.gold_low, j.gold_high)
-                typeearned += earned
-            print(f"Your {i} earned {typeearned} gold!")
-            allearned +=typeearned
-    return allearned
+                type_earned += earned
+            print(f"Your {i} earned {type_earned} gold!")
+            all_earned +=type_earned
+    return all_earned
 
 #starts the game, eventual plan to run game state without functions starting other functions.
 if __name__ == "__main__":
     try:
-        gamestart()
-        playerturn()
+        game_start()
+        player_turn()
     except Exception as e:
         print(e)
         print("This didn't work but at least I didn't die")
