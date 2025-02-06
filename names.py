@@ -1,10 +1,11 @@
 import random
-# import pandas
+import pandas as pd
 
-gob_a = ["A", "B", "C"]
-gob_b = ["1", "2", "3"]
-gob_c = ["X", "Y", "Z"]
-
+# Imports name chunks from CSVs for random name construction
+import_goblins = pd.read_csv("goblinnames.csv", header=None).squeeze("columns")
+import_orcs = pd.read_csv("orcnames.csv", header=None).squeeze("columns")
+import_ogres = pd.read_csv("ogrenames.csv", header=None).squeeze("columns")
+import_dragons = pd.read_csv("dragonnames.csv", header=None).squeeze("columns")
 
 def goblin_names():
     """
@@ -13,31 +14,35 @@ def goblin_names():
     Returns:
         string: a randomly generated goblin name.   
     """
-    return(gob_a[random.randint(0, len(gob_a)-1)] + gob_b[random.randint(0, len(gob_b)-1)] + gob_c[random.randint(0, len(gob_c)-1)])
+    return(import_goblins.iloc[random.randint(0, len(import_goblins)-1)] + import_goblins.iloc[random.randint(0, len(import_goblins)-1)].lower() + import_goblins.iloc[random.randint(0, len(import_goblins)-1)].lower())
 
 def orc_names():
     """
-    Generates a random name for orcs when hired, currently uses goblin lists.
+    Generates a random name for orcs when hired.
     
     Returns:
         string: a randomly generated orc name.
     """
-    return(gob_a[random.randint(0, len(gob_a)-1)] + gob_b[random.randint(0, len(gob_b)-1)] + gob_c[random.randint(0, len(gob_c)-1)])
+    return(import_orcs.iloc[random.randint(0, len(import_orcs)-1)] + import_orcs.iloc[random.randint(0, len(import_orcs)-1)].lower())
+
 
 def ogre_names():
     """
-    Generates a random name for ogre when hired, currently uses goblin lists.
+    Generates a random name for ogre when hired.
     
     Returns:
         string: a randomly generated ogre name.    
     """
-    return(gob_a[random.randint(0, len(gob_a)-1)] + gob_b[random.randint(0, len(gob_b)-1)] + gob_c[random.randint(0, len(gob_c)-1)])
+    return(import_ogres.iloc[random.randint(0, len(import_ogres)-1)] + import_ogres.iloc[random.randint(0, len(import_ogres)-1)].lower())
+
 
 def dragon_names():
     """
-    Generates a random name for dragons when hired, currently uses goblin lists.
+    Generates a random name for dragons when hired.
     
     Returns:
         string: a randomly generated dragon name.    
     """
-    return(gob_a[random.randint(0, len(gob_a)-1)] + gob_b[random.randint(0, len(gob_b)-1)] + gob_c[random.randint(0, len(gob_c)-1)])
+    return(import_dragons.iloc[random.randint(0, len(import_dragons)-1)] + import_dragons.iloc[random.randint(0, len(import_dragons)-1)].lower())
+
+print(import_goblins)

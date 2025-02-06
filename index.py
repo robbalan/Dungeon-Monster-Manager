@@ -14,49 +14,48 @@ monsters = {
     "dragons": []
     }
 
-
-
 class Unit:
     """Unit class sets params for fired/dead- future functions to delete objects when either is set to true."""
-    def __init__(self, fired=False, dead=False):
+    def __init__(self):
+        pass
+            
 
-        self.is_fired = fired
-        self.is_dead = dead
-
-        if self.is_fired:
-            pass
-        if self.is_dead:
-            pass
 
 # Classes for all monster types
 class Goblin(Unit):
     """Creates a goblin."""
     type = "Goblin"
-    max_health = 5
-    current_health = max_health
     gold_low = 0
     gold_high = 2
+    injury_chance = 25
     def __init__(self):
+        super().__init__()
+        self.max_health = 5
+        self.current_health = self.max_health
         self.name = name_gen.goblin_names()
 
 class Orc(Unit):
     """Creates an orc."""
     type = "Orc"
-    max_health = 15
-    current_health = max_health
     gold_low = 1
     gold_high = 4
+    injury_chance = 10
     def __init__(self):
+        super().__init__()
+        self.max_health = 15
+        self.current_health = self.max_health
         self.name = name_gen.orc_names()
 
 class Ogre(Unit):
     """Creates an ogre."""
     type = "Ogre"
-    max_health = 30
-    current_health = max_health
     gold_low = -10
     gold_high = 15
+    injury_chance = 15
     def __init__(self):
+        super().__init__()
+        self.max_health = 30
+        self.current_health = self.max_health
         self.name = name_gen.ogre_names()
 
 class Dragon(Unit):
@@ -66,14 +65,18 @@ class Dragon(Unit):
     current_health = max_health
     gold_low = 20
     gold_high = 50
+    injury_chance = 5
     def __init__(self):
+        super().__init__()
+        self.max_health = 75
+        self.current_health = self.max_health
         self.name = name_gen.dragon_names()
       
 
 def game_start():
     """Launches the game."""
     print("Hello! Welcome to Dungeon Monster Manager! Ready to manage some monsters?")
-    start_game = input("Do you want to (p)lay or go to (o)ptions?: ")
+    start_game = input("Do you want to (p)lay or go to (o)ptions?: ").strip().lower()
     if start_game == "p":
         pass
     elif start_game == "o":
@@ -112,8 +115,10 @@ def turn_action():
     elif choice == "e":
         end_day()
     elif choice == 'test':
-        for i in monsters["goblins"]:
-            print(i.name)
+        for i in monsters:
+            for j in monsters[i]:
+                print(j.name)
+        turn_action()
 
     else:
         print("That's not a valid input")
@@ -172,19 +177,34 @@ def end_day():
         rent_price += 50
         if gold < 0:
             print("You lose you fucking loser")
-            game_start()
     days_to_rent -= 1
-    if random.randint(0, 9) == 9:
-        give_bonus = input(monsters["goblins"][random.randint(0, len(monsters["goblins"])-1)].name + " wants some gold. Do you want to pay them 50 gold? y/n: ")
-        if give_bonus == "y":
-            gold -= 50
-        elif give_bonus == "n":
-            print("They are sad")
-        else:
-            print("Ignoring them? They'll remember this")
-    print()    
+    random_event()
+    death_turn()   
     player_turn() 
     
+def random_event():
+    for i in monsters:
+        if len(monsters[i]) == 0: #if threre are no monsters of a certain type, skips running it
+            pass
+        else:
+            for j in monsters[i]:
+                injury_roll = random.randint(1, 100)
+                if injury_roll <= j.injury_chance:
+                    damage_taken = random.randint(1, 10)
+                    j.current_health -= damage_taken
+                    print(f"{j.name} took {damage_taken} damage from a workplace injury!")
+                    
+
+def death_turn():
+    for i in monsters:
+        if len(monsters[i]) == 0: #if threre are no monsters of a certain type, skips running it
+            pass
+        else:
+            for j in monsters[i]:
+                if j.current_health <= 0:
+                    print(f"{j.name} has died :(")
+                    monsters[i].remove(j)
+
 def get_gold():
     """Calculates gold for every monster and monster type, based one each individual monster's gold stats"""
     all_earned = 0
