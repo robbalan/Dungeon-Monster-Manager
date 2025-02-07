@@ -25,52 +25,50 @@ class Unit:
 class Goblin(Unit):
     """Creates a goblin."""
     type = "Goblin"
-    gold_low = 0
-    gold_high = 2
-    injury_chance = 25
     def __init__(self):
         super().__init__()
         self.max_health = 5
         self.current_health = self.max_health
         self.name = name_gen.goblin_names()
+        self.gold_low = 0
+        self.gold_high = 2
+        self.injury_chance = 25
 
 class Orc(Unit):
     """Creates an orc."""
     type = "Orc"
-    gold_low = 1
-    gold_high = 4
-    injury_chance = 10
     def __init__(self):
         super().__init__()
         self.max_health = 15
         self.current_health = self.max_health
         self.name = name_gen.orc_names()
+        self.gold_low = 1
+        self.gold_high = 4
+        self.injury_chance = 10
 
 class Ogre(Unit):
     """Creates an ogre."""
     type = "Ogre"
-    gold_low = -10
-    gold_high = 15
-    injury_chance = 15
     def __init__(self):
         super().__init__()
         self.max_health = 30
         self.current_health = self.max_health
         self.name = name_gen.ogre_names()
+        self.gold_low = -10
+        self.gold_high = 15
+        self.injury_chance = 15
 
 class Dragon(Unit):
     """Creates a dragon."""
     type = "Dragon"
-    max_health = 75
-    current_health = max_health
-    gold_low = 20
-    gold_high = 50
-    injury_chance = 5
     def __init__(self):
         super().__init__()
         self.max_health = 75
         self.current_health = self.max_health
         self.name = name_gen.dragon_names()
+        self.gold_low = 20
+        self.gold_high = 50
+        self.injury_chance = 5
       
 
 def game_start():
@@ -177,12 +175,16 @@ def end_day():
         rent_price += 50
         if gold < 0:
             print("You lose you fucking loser")
+            quit()
     days_to_rent -= 1
     random_event()
     death_turn()   
     player_turn() 
     
 def random_event():
+    """
+    
+    """
     for i in monsters:
         if len(monsters[i]) == 0: #if threre are no monsters of a certain type, skips running it
             pass
